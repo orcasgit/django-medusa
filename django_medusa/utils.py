@@ -23,9 +23,14 @@ def get_static_renderers():
 
     # INSTALLED_APPS that aren't the project itself (also ignoring this
     # django_medusa module)
+    try:
+        from django.apps import apps
+        installed_apps = [app.module.__name__ for app in apps.get_app_configs()]
+    except ImportError:  # Fallback for Django < 1.7
+        installed_apps = settings.INSTALLED_APPS
     modules_to_check += filter(
         lambda x: (x != "django_medusa") and (x != settings_module),
-        settings.INSTALLED_APPS
+        installed_apps
     )
 
     for app in modules_to_check:
